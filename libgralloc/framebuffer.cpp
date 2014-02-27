@@ -256,9 +256,13 @@ int mapFrameBufferLocked(struct private_module_t* module)
         module->fbFormat = HAL_PIXEL_FORMAT_RGB_565;
     }
 
+#ifndef USE_LEGACY_GRALLOC
     //adreno needs 4k aligned offsets. Max hole size is 4096-1
     int  size = roundUpToPageSize(info.yres * info.xres *
                                                        (info.bits_per_pixel/8));
+#else
+    int  size = info.yres * info.xres * (info.bits_per_pixel/8);
+#endif
 
     /*
      * Request NUM_BUFFERS screens (at least 2 for page flipping)
@@ -371,9 +375,13 @@ int mapFrameBufferLocked(struct private_module_t* module)
     int err;
     module->numBuffers = info.yres_virtual / info.yres;
     module->bufferMask = 0;
+    #ifndef USE_LEGACY_GRALLOC
     //adreno needs page aligned offsets. Align the fbsize to pagesize.
     size_t fbSize = roundUpToPageSize(finfo.line_length * info.yres)*
                     module->numBuffers;
+#else
+    size_t fbSize = roundUpToPageSize(finfo.line_length * info.yres_virtual);
+#endif
     module->framebuffer = new private_handle_t(fd, fbSize,
                                         private_handle_t::PRIV_FLAGS_USES_PMEM,
                                         BUFFER_TYPE_UI,
