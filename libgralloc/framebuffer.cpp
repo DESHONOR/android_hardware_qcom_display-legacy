@@ -373,7 +373,7 @@ int mapFrameBufferLocked(struct private_module_t* module)
      */
 
     int err;
-    module->numBuffers = info.yres_virtual / info.yres;
+    module->numBuffers = 3;
     module->bufferMask = 0;
     #ifndef USE_LEGACY_GRALLOC
     //adreno needs page aligned offsets. Align the fbsize to pagesize.
